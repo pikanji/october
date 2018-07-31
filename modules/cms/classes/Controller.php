@@ -100,6 +100,11 @@ class Controller
     protected $statusCode = 200;
 
     /**
+     * @var array A list of response headers
+     */
+    protected $responseHeaders = [];
+
+    /**
      * @var self Cache of self
      */
     protected static $instance = null;
@@ -201,7 +206,7 @@ class Controller
             }
 
             if (!$page = $this->router->findByUrl('/404')) {
-                return Response::make(View::make('cms::404'), $this->statusCode);
+                return Response::make(View::make('cms::404'), $this->statusCode, $this->responseHeaders);
             }
         }
 
@@ -226,7 +231,7 @@ class Controller
             return $result;
         }
 
-        return Response::make($result, $this->statusCode);
+        return Response::make($result, $this->statusCode, $this->responseHeaders);
     }
 
     /**
@@ -661,7 +666,7 @@ class Controller
                     return $result;
                 }
 
-                return Response::make($responseContents, $this->statusCode);
+                return Response::make($responseContents, $this->statusCode, $this->responseHeaders);
             }
             catch (ValidationException $ex) {
                 /*
@@ -1048,6 +1053,18 @@ class Controller
         return $this;
     }
 
+    /**
+     * Sets the headers for the current web response.
+     * @param array $headers An associative array of headers with
+     * field names as array keys and field values as array values.
+     * @return self
+     */
+    public function setResponseHeaders(array $headers)
+    {
+        $this->responseHeaders = $headers;
+        return $this;
+    }
+
     //
     // Getters
     //
@@ -1059,6 +1076,15 @@ class Controller
     public function getStatusCode()
     {
         return $this->statusCode;
+    }
+
+    /**
+     * Returns the headers for the current web response.
+     * @return array Response headers
+     */
+    public function getResponseHeaders()
+    {
+        return $this->responseHeaders;
     }
 
     /**
